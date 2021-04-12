@@ -28,3 +28,8 @@ df['pickup_datetime'] = pandas.to_datetime(df['pickup_datetime'])
 df['hour'] = df['pickup_datetime'].dt.hour
 df['am_or_pm'] = np.where(df['hour'] > 12, 'pm', 'am')
 df['weekday'] = df['pickup_datetime'].dt.strftime('%a')
+
+# Separate data into categorical or continuous columns
+cat_cols = ['hour', 'am_or_pm', 'weekday']
+cont_cols = ['pickup_latitude', 'pickup_longitude', 'dropoff_latitude', 'dropoff_longitude', 'passenger_count', 'dist_km']
+y_col = ['fare_amount']
