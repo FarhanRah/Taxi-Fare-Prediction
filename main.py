@@ -1,6 +1,8 @@
 import pandas
 import torch
+import torch.nn as nn
 import numpy as np
+from TabularModel import TabularModel
 
 
 # Calculates the distance in km using the longitudes and latitudes
@@ -54,4 +56,23 @@ y = torch.tensor(df[y_col].values, dtype=torch.float)
 cats_size = [len(df[cat].cat.categories) for cat in cat_cols]
 embed_size = [(size, min(50, (size+1)//2)) for size in cats_size]
 
+# Set up the model
+model = TabularModel(embed_size, conts.shape[1], 1, [200, 100], p=0.4)
+
+# Set the loss function and the optimizer
+criterion = nn.MSELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+
+# Split the data in to train and test
+batch_size = 60000
+test_size = int(batch_size * 0.2)
+
+cat_train = cats[:batch_size-test_size]
+cat_test = cats[batch_size-test_size:batch_size]
+con_train = conts[:batch_size-test_size]
+con_test = conts[batch_size-test_size:batch_size]
+y_train = y[:batch_size-test_size]
+y_test = y[batch_size-test_size:batch_size]
+
+# Train the data
 
