@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from TabularModel import TabularModel
+import time
 
 
 # Calculates the distance in km using the longitudes and latitudes
@@ -75,4 +76,21 @@ y_train = y[:batch_size-test_size]
 y_test = y[batch_size-test_size:batch_size]
 
 # Train the data
+epochs = 75
+losses = []
+start_time = time.time()
 
+for i in range(epochs):
+    i += 1
+    y_pred = model.forward(cat_train, con_train)
+    loss = torch.sqrt(criterion(y_pred, y_train))  # Root Mean Square Error (RMSE)
+    losses.append(loss)
+
+    if i % 25 == 1:
+        print(f'Epoch: {i:3}  Loss: {loss.item():10.8f}')
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+print(f'Duration: {(time.time() - start_time):.2f} seconds.')
