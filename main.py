@@ -53,3 +53,5 @@ y = torch.tensor(df[y_col].values, dtype=torch.float)
 # Set up the embedding size
 cats_size = [len(df[cat].cat.categories) for cat in cat_cols]
 embed_size = [(size, min(50, (size+1)//2)) for size in cats_size]
+
+
