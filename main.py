@@ -18,3 +18,13 @@ def haversine_distance(df, lat1, long1, lat2, long2):
     d = (r * c)  # in kilometers
 
     return d
+
+
+df = pandas.read_csv('CanadaTaxiFares.csv')
+
+# Feature engineering the data
+df['dist_km'] = haversine_distance(df, 'pickup_latitude', 'pickup_longitude', 'dropoff_latitude', 'dropoff_longitude')
+df['pickup_datetime'] = pandas.to_datetime(df['pickup_datetime'])
+df['hour'] = df['pickup_datetime'].dt.hour
+df['am_or_pm'] = np.where(df['hour'] > 12, 'pm', 'am')
+df['weekday'] = df['pickup_datetime'].dt.strftime('%a')
