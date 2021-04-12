@@ -33,3 +33,19 @@ df['weekday'] = df['pickup_datetime'].dt.strftime('%a')
 cat_cols = ['hour', 'am_or_pm', 'weekday']
 cont_cols = ['pickup_latitude', 'pickup_longitude', 'dropoff_latitude', 'dropoff_longitude', 'passenger_count', 'dist_km']
 y_col = ['fare_amount']
+
+for cat in cat_cols:
+    df[cat] = df[cat].astype('category')
+
+# Merge each of the types of columns and convert them into tensors
+hr = df['hour'].cat.codes.values
+ampm = df['am_or_pm'].cat.codes.values
+wkdy = df['weekday'].cat.codes.values
+
+cats = np.stack([hr, ampm, wkdy], axis=1)
+cats = torch.tensor(cats, dtype=torch.int64)
+
+conts = np.stack([df[cont].values for cont in cont_cols], axis=1)
+conts = torch.tensor(conts, dtype=torch.float)
+
+y = torch.tensor(df[y_col].values, dtype=torch.float)
