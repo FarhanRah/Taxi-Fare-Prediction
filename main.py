@@ -62,7 +62,7 @@ model = TabularModel(embed_size, conts.shape[1], 1, [200, 100], p=0.4)
 
 # Set the loss function and the optimizer
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # Split the data in to train and test
 batch_size = 60000
@@ -76,7 +76,7 @@ y_train = y[:batch_size-test_size]
 y_test = y[batch_size-test_size:batch_size]
 
 # Train the data
-epochs = 75
+epochs = 300
 losses = []
 start_time = time.time()
 
@@ -93,4 +93,17 @@ for i in range(epochs):
     loss.backward()
     optimizer.step()
 
-print(f'Duration: {(time.time() - start_time):.2f} seconds.')
+print(f'Duration: {(time.time() - start_time):.0f} seconds.')
+
+# Test the data
+with torch.no_grad():
+    y_val = model(cat_test, con_test)
+    loss = torch.sqrt(criterion(y_val, y_test))
+
+print(f'Root Mean Square Error: {loss:.8f}')
+
+# Making sure to save the model only after the training has happened
+if len(losses) == epochs:
+    torch.save(model.state_dict(), 'TaxiFareRegressionModel.pt')
+else:
+    print('Model has not been trained. Consider loading a trained model instead.')
